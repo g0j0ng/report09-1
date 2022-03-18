@@ -119,7 +119,7 @@ select * from 정보;
 -- 4번 2020년에 제작된 장르별 영화의 편수를 구하시오    
 select distinct 장르.장르명 장르,  concat(count(*),'편') 제작편수
 from 영화 join 정보 on 영화.영화코드=정보.영화정보 join 장르 on 정보.장르코드=장르.장르코드
-where 영화.제작년도 like 2020
+where 영화.제작년도 like '2020'
 group by 영화.제목;
 
 -- 5번 Romantic comedy에 출연하지 않은 배우목록을 출력하시오
