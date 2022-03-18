@@ -6,7 +6,7 @@ create database if not exists 영화정보;
 -- --------------------------------------------------------------------------------------------------------------------------------
 --  								  				영화정보 관리자 설정
 -- --------------------------------------------------------------------------------------------------------------------------------
-drop user if exists movies@localhost;
+drop user if exists movie@localhost;
 create user if not exists movie@localhost identified with mysql_native_password by 'movie';
 grant all privileges on 영화정보.* to movie@localhost with grant option;
 -- show databases;
@@ -68,6 +68,7 @@ create table 정보(
     foreign key(장르코드) references 장르(장르코드),
     foreign key(연출감독) references 감독(등록번호)
 );
+desc 정보;
 show tables;
 -- --------------------------------------------------------------------------------------------------------------------------------
 --  								  				  테이블 자료 삽입
@@ -115,7 +116,7 @@ insert into 정보 values('m5','980909-1999999','g3','d1');
 insert into 정보 values('m5','991001-2101010','g3','d1');
 select * from 정보;
 
--- 2020년에 제작된 장르별 영화의 편수를 구하시오    
+-- 4번 2020년에 제작된 장르별 영화의 편수를 구하시오    
 select distinct 장르.장르명 장르,  concat(count(*),'편') 제작편수
 from 영화 join 정보 on 영화.영화코드=정보.영화정보 join 장르 on 정보.장르코드=장르.장르코드
 where 영화.제작년도 like 2020
@@ -127,19 +128,19 @@ from 배우 join 정보 on 배우.주민번호=정보.출연배우 join 장르 o
 where 장르명 not like 'Romantic comedy' ;
 
 -- 6번 장르명이 ‘Romantic comedy’인 자료의 장르코드와 장르명을 각각 ‘000111“,”로맨틱 코미디“로 변경하시오
--- select  *
--- from 장르 join 정보 on 장르.장르코드=정보.장르코드;
+select *
+from 장르 join 정보 on 정보.장르코드=장르.장르코드
+where 장르명 = (
+	select 장르명 from 장르
+    where 장르명 like 'Romantic comedy'
+);
 
--- -- update 정보 set 장르코드='000111' where 장르코드 in(
--- -- 	select 장르명 from 장르 where 장르명= 'Romantic comedy'
--- -- );
+set foreign_key_checks = 0;   
+update 장르 set 장르코드='000111', 장르명 ='로맨틱 코미디' where 장르명 = 'Romantic comedy';
+update 정보 set 장르코드='000111' where 장르코드 = 'g1';
+set foreign_key_checks = 1;
 
--- SET foreign_key_checks = 0;   
--- update 장르 set 장르코드='000111', 장르명 ='로맨틱 코미디' where 장르명 = 'Romantic comedy';
--- SET foreign_key_checks = 1;
-
--- select *
--- from 정보 join 장르 on 장르.장르코드=정보.장르코드;
+select  distinct 장르.장르명, 정보.장르코드  from 장르 join 정보 on 정보.장르코드=장르.장르코드;
 
 -- 7번 장르가 '포르노'에 해당하는 영화는 불법이므로 해당 영화에 대한 모든 정보를 삭제하시오
 select *
@@ -166,5 +167,3 @@ where 장르명 = (
 select 장르명 from 장르;
 delete from 장르 where 장르명 = '포르노';
 select 장르명 from 장르;
-
-
